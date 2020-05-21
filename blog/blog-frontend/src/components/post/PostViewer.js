@@ -2,6 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 import palette from '../../lib/styles/palette';
 import Responsive from '../common/Responsive';
+import SubInfo from '../common/SubInfo';
+import Tags from '../common/Tags';
+import { Helmet } from 'react-helmet-async';
 
 const PostViewerBlock = styled(Responsive)`
   margin-top: 4rem;
@@ -18,39 +21,12 @@ const PostHead = styled.div`
   }
 `;
 
-const SubInfo = styled.div`
-  margin-top: 1rem;
-  color: ${palette.gray[6]};
-
-  /* span 사이에 가운뎃점 문자 보여주기 */
-  span+span: before {
-    color: ${palette.gray[5]};
-    padding-left: 0.25rem;
-    padding-right: 0.25rem;
-    content: '\\B7'; /* 가운뎃점 문자 */
-  }
-`;
-
-const Tags = styled.div`
-  margin-top: 0.5rem;
-  .tag {
-    display: inline-block;
-    color: ${palette.cyan[7]};
-    text-decoration: none;
-    margin-right: 0.5rem;
-
-    &:hover {
-      color: ${palette.cyan[6]};
-    }
-  }
-`;
-
 const PostContent = styled.div`
   font-size: 1.3125rem;
   color: ${palette.gray[8]};
 `;
 
-const PostViewer = ({ post, error, loading }) => {
+const PostViewer = ({ post, error, loading, actionButtons, ownPost }) => {
   // 에러 발생 시
   if (error) {
     if (error.response && error.response.status === 404) {
@@ -67,23 +43,24 @@ const PostViewer = ({ post, error, loading }) => {
   const { title, body, user, publishedDate, tags } = post;
 
   return (
-    <PostViewerBlock>
-      <PostHead>
-        <h1>{title}</h1>
-        <SubInfo>
-          <span>
-            <b>{user.username}</b>
-          </span>
-          <span>{new Date(publishedDate).toLocaleDateString()}</span>
-        </SubInfo>
-        <Tags>
-          {tags.map((tag) => (
-            <div className="tag">#{tag}</div>
-          ))}
-        </Tags>
-      </PostHead>
-      <PostContent dangerouslySetInnerHTML={{ __html: body }} />
-    </PostViewerBlock>
+    <>
+      <Helmet>
+        <title>{title} - REACTERS</title>
+      </Helmet>
+      <PostViewerBlock>
+        <PostHead>
+          <h1>{title}</h1>
+          <SubInfo
+            usernmae={user.usernmae}
+            publishedDate={publishedDate}
+            hasMarginTop
+          />
+          <Tags tags={tags} />
+        </PostHead>
+        {ownPost && actionButtons}
+        <PostContent dangerouslySetInnerHTML={{ __html: body }} />
+      </PostViewerBlock>
+    </>
   );
 };
 

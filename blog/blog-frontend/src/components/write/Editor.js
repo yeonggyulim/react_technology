@@ -64,6 +64,13 @@ const Editor = ({ title, body, onChangeField }) => {
         });
     }, [onChangeField]);
 
+    const mounted = useRef(false);
+    useEffect(() => {
+        if (mounted.current) return;
+        mounted.current = true;
+        quillInstance.current.root.innerHTML = body;
+    }, []); /* eslint-disable-line */
+
     const onChangeTitle = e => {
         onChangeField({ key: 'title', value: e.target.value });
     }
